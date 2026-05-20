@@ -80,7 +80,6 @@ function Navbar() {
 
           {/* Right */}
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
-            <LanguageSwitcher />
             <a
               href={BRAND.phoneHref}
               className="hidden 2xl:inline whitespace-nowrap text-sm text-white/70 hover:text-white transition-colors font-mono"
@@ -152,7 +151,6 @@ function Navbar() {
               ))}
             </nav>
             <div className="p-6 border-t border-white/10 flex flex-col gap-3">
-              <LanguageSwitcher variant="mobile" />
               <a href={BRAND.phoneHref} className="font-mono text-sm text-white/70">
                 {BRAND.phone}
               </a>
