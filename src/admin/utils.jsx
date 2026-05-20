@@ -286,8 +286,43 @@ function slugify(s) {
     .slice(0, 80);
 }
 
+/* Переключатель опубликовано/черновик */
+function PublishToggle({ value, onChange }) {
+  return (
+    <label className="!m-0 inline-flex items-center gap-2 cursor-pointer select-none">
+      <span className={`text-xs font-mono uppercase tracking-wider ${value ? "text-emerald-700" : "text-amber-700"}`}>
+        {value ? "Опубликовано" : "Черновик"}
+      </span>
+      <button
+        type="button"
+        onClick={() => onChange(!value)}
+        className={`relative w-10 h-5 rounded-full transition-colors ${value ? "bg-emerald-500" : "bg-amber-500"}`}
+        aria-label="toggle publish"
+      >
+        <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${value ? "left-5" : "left-0.5"}`} />
+      </button>
+    </label>
+  );
+}
+
+/* SEO-блок: заголовок, описание, OG-картинка (для шеринга в соцсетях/Telegram/WhatsApp) */
+function SeoFields({ form, onChange }) {
+  return (
+    <>
+      <div className="bg-[#FBFAF6] border border-[#E5DFD3] rounded-lg p-4 text-xs text-[#5C5550] leading-relaxed">
+        <strong>Эти поля влияют на:</strong> заголовок в результатах Google, превью при отправке ссылки в Telegram / WhatsApp / соцсети.
+        Если поля пустые — берутся обычный заголовок и краткое описание + главное изображение.
+      </div>
+      <MultiLangField label="SEO заголовок (≤ 60 символов)" langKey="seo_title" value={form} onChange={onChange} />
+      <MultiLangField label="SEO описание (≤ 160 символов)" langKey="seo_description" value={form} onChange={onChange} multiline />
+      <ImageUploader value={form.seo_og_image} onChange={(url) => onChange({ seo_og_image: url })} label="OG-картинка для шеринга (опционально, 1200×630 рекомендуется)" />
+    </>
+  );
+}
+
 Object.assign(window, {
   AdminLangTabs, MultiLangField, MultiLangArrayField, MultiLangListField,
   ImageUploader, GalleryUploader, ToastProvider, useToast, useConfirmDelete, slugify,
+  PublishToggle, SeoFields,
   ADMIN_LANGS,
 });

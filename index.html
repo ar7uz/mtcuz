@@ -116,13 +116,14 @@
 <!-- Supabase JS -->
 <script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 
-<!-- Core: config, helpers, supabase client, i18n -->
+<!-- Core: config, helpers, supabase client, i18n, analytics -->
 <script type="text/babel" data-presets="react" src="src/config.jsx"></script>
 <script type="text/babel" data-presets="react" src="src/lib.jsx"></script>
 <script type="text/babel" data-presets="react" src="src/brand.jsx"></script>
 <script type="text/babel" data-presets="react" src="src/router.jsx"></script>
 <script type="text/babel" data-presets="react" src="src/i18n.jsx"></script>
 <script type="text/babel" data-presets="react" src="src/supabase.jsx"></script>
+<script type="text/babel" data-presets="react" src="src/analytics.jsx"></script>
 
 <!-- Data (now loads from Supabase with seed fallback) -->
 <script type="text/babel" data-presets="react" src="src/data/projects.jsx"></script>
@@ -166,9 +167,17 @@
 <script type="text/babel" data-presets="react" src="src/admin/NewsAdmin.jsx"></script>
 <script type="text/babel" data-presets="react" src="src/admin/ProjectsAdmin.jsx"></script>
 <script type="text/babel" data-presets="react" src="src/admin/GovCasesAdmin.jsx"></script>
+<script type="text/babel" data-presets="react" src="src/admin/LeadsAdmin.jsx"></script>
+<script type="text/babel" data-presets="react" src="src/admin/AnalyticsAdmin.jsx"></script>
 <script type="text/babel" data-presets="react" src="src/admin/AdminApp.jsx"></script>
 
 <!-- App bootstrap -->
 <script type="text/babel" data-presets="react" src="src/App.jsx"></script>
+
+<!-- Vercel Web Analytics (анонимная, без cookies) -->
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>

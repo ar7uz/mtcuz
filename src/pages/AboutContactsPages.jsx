@@ -346,6 +346,124 @@ function AboutPage() {
   );
 }
 
+function ContactsForm() {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [honey, setHoney] = useState("");           // honeypot — должен остаться пустым
+  const [formOpenedAt] = useState(() => Date.now()); // honeypot — мин. время на форму
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(false);
+  const [err, setErr] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErr(null);
+
+    // Защита от ботов:
+    // 1. Скрытое поле "company" должно быть пустым (боты заполняют все поля)
+    // 2. Форма не должна быть отправлена менее чем через 3 секунды после открытия
+    if (honey) { setDone(true); return; } // silent drop — пусть думают что отправили
+    if (Date.now() - formOpenedAt < 3000) { setErr("Слишком быстро — заполните форму внимательнее."); return; }
+
+    if (!name.trim() || !phone.trim()) {
+      setErr("Имя и телефон обязательны.");
+      return;
+    }
+
+    setBusy(true);
+    try {
+      const payload = {
+        name:            name.trim().slice(0, 200),
+        phone:           phone.trim().slice(0, 50),
+        email:           email.trim() ? email.trim().slice(0, 200) : null,
+        message:         message.trim() ? message.trim().slice(0, 5000) : null,
+        source_page:     window.location.hash || "/",
+        source_referrer: document.referrer || null,
+        user_agent:      navigator.userAgent.slice(0, 500),
+      };
+      const { error } = await SB.from("leads").insert(payload);
+      if (error) throw error;
+
+      // Трекинг события
+      try { window.track && window.track("lead_submitted", { page: payload.source_page }); } catch {}
+
+      setDone(true);
+    } catch (e) {
+      setErr(e.message || "Не удалось отправить заявку. Попробуйте ещё раз или позвоните.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (done) {
+    return (
+      <div className="mt-12 bg-white/[0.04] border border-accent-gold/30 rounded-2xl p-10 text-center">
+        <div className="w-14 h-14 mx-auto rounded-full bg-accent-gold/15 flex items-center justify-center text-accent-gold mb-5">
+          <Icon name="Check" size={26} />
+        </div>
+        <h3 className="font-serif text-2xl text-white mb-3">Заявка отправлена</h3>
+        <p className="text-white/65 text-sm leading-relaxed max-w-md mx-auto">
+          Наш менеджер свяжется с вами в течение рабочего дня. Если вопрос срочный — звоните напрямую на {BRAND.phone}.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form className="mt-12 grid grid-cols-1 gap-5" onSubmit={handleSubmit} noValidate>
+      {/* honeypot — скрытое поле, для людей невидимо, боты обычно заполняют */}
+      <div style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", overflow: "hidden" }} aria-hidden="true">
+        <label>Компания (не заполнять)</label>
+        <input type="text" tabIndex={-1} autoComplete="off"
+               value={honey} onChange={(e) => setHoney(e.target.value)} />
+      </div>
+
+      <input
+        type="text" required value={name} onChange={(e) => setName(e.target.value)}
+        placeholder="Ваше имя или название организации"
+        maxLength={200}
+        className="bg-white/[0.04] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-white/40 focus:border-accent-gold focus:outline-none transition-colors"
+      />
+      <input
+        type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)}
+        placeholder="Телефон"
+        maxLength={50}
+        className="bg-white/[0.04] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-white/40 focus:border-accent-gold focus:outline-none transition-colors font-mono"
+      />
+      <input
+        type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email (необязательно)"
+        maxLength={200}
+        className="bg-white/[0.04] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-white/40 focus:border-accent-gold focus:outline-none transition-colors"
+      />
+      <textarea
+        value={message} onChange={(e) => setMessage(e.target.value)}
+        placeholder="Сообщение — вопрос о компании, объекте или дочерних компаниях (необязательно)"
+        rows={4} maxLength={5000}
+        className="bg-white/[0.04] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-white/40 focus:border-accent-gold focus:outline-none transition-colors resize-none"
+      />
+
+      {err && (
+        <div className="bg-red-500/10 border border-red-500/30 text-red-200 text-sm rounded-xl px-5 py-3">
+          {err}
+        </div>
+      )}
+
+      <button
+        type="submit" disabled={busy}
+        className="bg-accent-coral text-white py-4 rounded-full text-sm font-medium hover:scale-[1.02] transition-transform mt-2 disabled:opacity-60 disabled:hover:scale-100"
+      >
+        {busy ? "Отправка…" : "Отправить сообщение"}
+      </button>
+      <p className="text-xs text-white/40 text-center mt-2">
+        Нажимая «Отправить», вы соглашаетесь с политикой обработки персональных данных.
+      </p>
+    </form>
+  );
+}
+
 function ContactsPage() {
   useEffect(() => { document.title = "Контакты — " + BRAND.full; }, []);
 
@@ -511,41 +629,11 @@ function ContactsPage() {
             Ответим на вопросы о компании, портфолио и сертификатах.
           </p>
 
-          <form
-            className="mt-12 grid grid-cols-1 gap-5"
-            onSubmit={(e) => { e.preventDefault(); alert("Заявка отправлена. Это демо-форма."); }}
-          >
-            <input
-              type="text"
-              required
-              placeholder="Ваше имя или название организации"
-              className="bg-white/[0.04] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-white/40 focus:border-accent-gold focus:outline-none transition-colors"
-            />
-            <input
-              type="tel"
-              required
-              placeholder="Телефон"
-              className="bg-white/[0.04] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-white/40 focus:border-accent-gold focus:outline-none transition-colors font-mono"
-            />
-            <textarea
-              placeholder="Сообщение — вопрос о компании, объекте или дочерних компаниях (необязательно)"
-              rows={4}
-              className="bg-white/[0.04] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-white/40 focus:border-accent-gold focus:outline-none transition-colors resize-none"
-            />
-            <button
-              type="submit"
-              className="bg-accent-coral text-white py-4 rounded-full text-sm font-medium hover:scale-[1.02] transition-transform mt-2"
-            >
-              Отправить сообщение
-            </button>
-            <p className="text-xs text-white/40 text-center mt-2">
-              Нажимая «Отправить», вы соглашаетесь с политикой обработки персональных данных.
-            </p>
-          </form>
+          <ContactsForm />
         </div>
       </section>
     </>
   );
 }
 
-Object.assign(window, { AboutPage, ContactsPage });
+Object.assign(window, { AboutPage, ContactsPage, ContactsForm });

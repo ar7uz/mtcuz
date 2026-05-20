@@ -85,16 +85,21 @@ function NewsEditor({ id }) {
   const isNew = !id;
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
+  const [tab, setTab] = useState("content");
   const [form, setForm] = useState({
     slug: "",
     iso_date: new Date().toISOString().slice(0, 10),
     image: "",
     sort_order: 0,
+    is_published: true,
     title_ru: "", title_uz: "", title_en: "",
     excerpt_ru: "", excerpt_uz: "", excerpt_en: "",
     date_label_ru: "", date_label_uz: "", date_label_en: "",
     category_ru: "", category_uz: "", category_en: "",
     body_ru: [], body_uz: [], body_en: [],
+    seo_title_ru: "", seo_title_uz: "", seo_title_en: "",
+    seo_description_ru: "", seo_description_uz: "", seo_description_en: "",
+    seo_og_image: "",
   });
 
   useEffect(() => {
@@ -127,6 +132,11 @@ function NewsEditor({ id }) {
 
   if (loading) return <div className="text-[#8A847B]">Загрузка…</div>;
 
+  const tabs = [
+    { key: "content",   label: "Содержимое" },
+    { key: "seo",       label: "SEO / Шеринг" },
+  ];
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -138,40 +148,60 @@ function NewsEditor({ id }) {
             {isNew ? "Новая новость" : "Редактирование"}
           </h1>
         </div>
-        <button onClick={handleSave} disabled={saving} className="admin-btn admin-btn-primary">
-          <Icon name="Check" size={16} /> {saving ? "Сохранение…" : "Сохранить"}
-        </button>
+        <div className="flex items-center gap-3">
+          <PublishToggle value={form.is_published} onChange={(v) => upd({ is_published: v })} />
+          <button onClick={handleSave} disabled={saving} className="admin-btn admin-btn-primary">
+            <Icon name="Check" size={16} /> {saving ? "Сохранение…" : "Сохранить"}
+          </button>
+        </div>
+      </div>
+
+      <div className="flex gap-1 mb-4 border-b border-[#E5DFD3]">
+        {tabs.map((t) => (
+          <button key={t.key} onClick={() => setTab(t.key)}
+            className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+              tab === t.key ? "border-[#063CA1] text-[#063CA1]" : "border-transparent text-[#5C5550] hover:text-[#1A1612]"
+            }`}>
+            {t.label}
+          </button>
+        ))}
       </div>
 
       <div className="bg-white rounded-xl border border-[#E5DFD3] p-6 space-y-5 max-w-4xl">
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <label>Slug (URL)</label>
-            <input value={form.slug} onChange={(e) => upd({ slug: e.target.value })} placeholder="news-slug" />
-            {form.title_ru && !form.slug && (
-              <button type="button" className="text-xs text-[#063CA1] mt-1 hover:underline"
-                onClick={() => upd({ slug: slugify(form.title_ru) })}>
-                сгенерировать из заголовка
-              </button>
-            )}
-          </div>
-          <div>
-            <label>Дата (ISO)</label>
-            <input type="date" value={form.iso_date} onChange={(e) => upd({ iso_date: e.target.value })} />
-          </div>
-          <div>
-            <label>Порядок (меньше = выше)</label>
-            <input type="number" value={form.sort_order} onChange={(e) => upd({ sort_order: parseInt(e.target.value) || 0 })} />
-          </div>
-        </div>
+        {tab === "content" && (
+          <>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label>Slug (URL)</label>
+                <input value={form.slug} onChange={(e) => upd({ slug: e.target.value })} placeholder="news-slug" />
+                {form.title_ru && !form.slug && (
+                  <button type="button" className="text-xs text-[#063CA1] mt-1 hover:underline"
+                    onClick={() => upd({ slug: slugify(form.title_ru) })}>
+                    сгенерировать из заголовка
+                  </button>
+                )}
+              </div>
+              <div>
+                <label>Дата (ISO)</label>
+                <input type="date" value={form.iso_date} onChange={(e) => upd({ iso_date: e.target.value })} />
+              </div>
+              <div>
+                <label>Порядок (меньше = выше)</label>
+                <input type="number" value={form.sort_order} onChange={(e) => upd({ sort_order: parseInt(e.target.value) || 0 })} />
+              </div>
+            </div>
 
-        <ImageUploader value={form.image} onChange={(url) => upd({ image: url })} label="Главное изображение" />
+            <ImageUploader value={form.image} onChange={(url) => upd({ image: url })} label="Главное изображение" />
 
-        <MultiLangField label="Заголовок" langKey="title" value={form} onChange={upd} required />
-        <MultiLangField label="Категория"  langKey="category" value={form} onChange={upd} />
-        <MultiLangField label="Подпись даты (напр. «ИЮНЬ 2025»)" langKey="date_label" value={form} onChange={upd} />
-        <MultiLangField label="Краткое описание" langKey="excerpt" value={form} onChange={upd} multiline />
-        <MultiLangArrayField label="Текст новости" langKey="body" value={form} onChange={upd} />
+            <MultiLangField label="Заголовок" langKey="title" value={form} onChange={upd} required />
+            <MultiLangField label="Категория"  langKey="category" value={form} onChange={upd} />
+            <MultiLangField label="Подпись даты (напр. «ИЮНЬ 2025»)" langKey="date_label" value={form} onChange={upd} />
+            <MultiLangField label="Краткое описание" langKey="excerpt" value={form} onChange={upd} multiline />
+            <MultiLangArrayField label="Текст новости" langKey="body" value={form} onChange={upd} />
+          </>
+        )}
+
+        {tab === "seo" && <SeoFields form={form} onChange={upd} />}
       </div>
     </div>
   );

@@ -77,10 +77,12 @@ function AdminApp({ params }) {
   // Авторизован и админ — показываем layout + содержимое
   let content;
   switch (section) {
-    case "news":     content = <NewsAdmin     id={itemId} />; break;
-    case "projects": content = <ProjectsAdmin id={itemId} />; break;
-    case "gov":      content = <GovCasesAdmin id={itemId} />; break;
-    default:         content = <AdminDashboard />;
+    case "news":      content = <NewsAdmin      id={itemId} />; break;
+    case "projects":  content = <ProjectsAdmin  id={itemId} />; break;
+    case "gov":       content = <GovCasesAdmin  id={itemId} />; break;
+    case "leads":     content = <LeadsAdmin     id={itemId} />; break;
+    case "analytics": content = <AnalyticsAdmin />; break;
+    default:          content = <AdminDashboard />;
   }
 
   return (

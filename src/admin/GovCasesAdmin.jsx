@@ -75,7 +75,10 @@ function GovCaseEditor({ id }) {
   const [saving, setSaving] = useState(false);
   const [tab, setTab] = useState("main");
   const [form, setForm] = useState({
-    slug: "", sort_order: 0, image: "", gallery: [],
+    slug: "", sort_order: 0, image: "", gallery: [], is_published: true,
+    seo_title_ru: "", seo_title_uz: "", seo_title_en: "",
+    seo_description_ru: "", seo_description_uz: "", seo_description_en: "",
+    seo_og_image: "",
     name_ru: "", name_uz: "", name_en: "",
     full_name_ru: "", full_name_uz: "", full_name_en: "",
     customer_ru: "", customer_uz: "", customer_en: "",
@@ -141,6 +144,7 @@ function GovCaseEditor({ id }) {
     { key: "details", label: "Детали" },
     { key: "specs",   label: "Спецификации" },
     { key: "gallery", label: "Галерея" },
+    { key: "seo",     label: "SEO" },
   ];
 
   return (
@@ -154,9 +158,12 @@ function GovCaseEditor({ id }) {
             {isNew ? "Новый объект" : (form.name_ru || "Объект")}
           </h1>
         </div>
-        <button onClick={handleSave} disabled={saving} className="admin-btn admin-btn-primary">
-          <Icon name="Check" size={16} /> {saving ? "Сохранение…" : "Сохранить"}
-        </button>
+        <div className="flex items-center gap-3">
+          <PublishToggle value={form.is_published} onChange={(v) => upd({ is_published: v })} />
+          <button onClick={handleSave} disabled={saving} className="admin-btn admin-btn-primary">
+            <Icon name="Check" size={16} /> {saving ? "Сохранение…" : "Сохранить"}
+          </button>
+        </div>
       </div>
 
       <div className="flex gap-1 mb-4 border-b border-[#E5DFD3]">
@@ -224,6 +231,8 @@ function GovCaseEditor({ id }) {
         {tab === "gallery" && (
           <GalleryUploader value={form.gallery} onChange={(g) => upd({ gallery: g })} />
         )}
+
+        {tab === "seo" && <SeoFields form={form} onChange={upd} />}
       </div>
     </div>
   );

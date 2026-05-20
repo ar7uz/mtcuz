@@ -3,9 +3,11 @@
 function AdminLayout({ section, user, onLogout, children }) {
   const items = [
     { key: "dashboard", label: "Главная",    icon: "LayoutDashboard", to: "/admin" },
-    { key: "news",      label: "Новости",    icon: "Newspaper",        to: "/admin/news" },
-    { key: "projects",  label: "Объекты",    icon: "Building2",        to: "/admin/projects" },
-    { key: "gov",       label: "Госзаказы",  icon: "Landmark",         to: "/admin/gov" },
+    { key: "leads",     label: "Заявки",     icon: "Inbox",           to: "/admin/leads" },
+    { key: "news",      label: "Новости",    icon: "Newspaper",       to: "/admin/news" },
+    { key: "projects",  label: "Объекты",    icon: "Building2",       to: "/admin/projects" },
+    { key: "gov",       label: "Госзаказы",  icon: "Landmark",        to: "/admin/gov" },
+    { key: "analytics", label: "Аналитика",  icon: "BarChart3",       to: "/admin/analytics" },
   ];
 
   return (

@@ -14,6 +14,11 @@ function FooterGate() {
   return <Footer />;
 }
 
+function PageTracker() {
+  useTrackPageViews();
+  return null;
+}
+
 function App() {
   const [ready, setReady] = useState(false);
 
@@ -33,6 +38,7 @@ function App() {
     <LangProvider>
       <Router>
         <ScrollToTop />
+        <PageTracker />
         <Navbar />
         <main>
           <Routes>

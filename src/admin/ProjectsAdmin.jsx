@@ -80,9 +80,13 @@ function ProjectEditor({ id }) {
     status: "building",
     status_class: "bg-accent-blue text-white",
     price_from_num: 0,
+    is_published: true,
     lat: null, lng: null,
     main_image: "",
     gallery: [],
+    seo_title_ru: "", seo_title_uz: "", seo_title_en: "",
+    seo_description_ru: "", seo_description_uz: "", seo_description_en: "",
+    seo_og_image: "",
     name_ru: "", name_uz: "", name_en: "",
     full_name_ru: "", full_name_uz: "", full_name_en: "",
     tier_ru: "", tier_uz: "", tier_en: "",
@@ -173,6 +177,7 @@ function ProjectEditor({ id }) {
     { key: "gallery",  label: "Галерея" },
     { key: "plans",    label: "Планировки" },
     { key: "progress", label: "Ход стройки" },
+    { key: "seo",      label: "SEO" },
   ];
 
   return (
@@ -186,9 +191,12 @@ function ProjectEditor({ id }) {
             {isNew ? "Новый объект" : (form.name_ru || "Объект")}
           </h1>
         </div>
-        <button onClick={handleSave} disabled={saving} className="admin-btn admin-btn-primary">
-          <Icon name="Check" size={16} /> {saving ? "Сохранение…" : "Сохранить"}
-        </button>
+        <div className="flex items-center gap-3">
+          <PublishToggle value={form.is_published} onChange={(v) => upd({ is_published: v })} />
+          <button onClick={handleSave} disabled={saving} className="admin-btn admin-btn-primary">
+            <Icon name="Check" size={16} /> {saving ? "Сохранение…" : "Сохранить"}
+          </button>
+        </div>
       </div>
 
       <div className="flex gap-1 mb-4 border-b border-[#E5DFD3]">
@@ -299,6 +307,8 @@ function ProjectEditor({ id }) {
             hasImage
           />
         )}
+
+        {tab === "seo" && <SeoFields form={form} onChange={upd} />}
       </div>
     </div>
   );
