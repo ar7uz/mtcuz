@@ -1,0 +1,29 @@
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.claude/
+
+# Dependencies (на случай если будут)
+node_modules/
+package-lock.json
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+dist/
+build/
+.vercel/
+
+# Logs
+*.log
+npm-debug.log*

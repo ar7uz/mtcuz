@@ -4,19 +4,23 @@
  */
 
 const NAV_LINKS = [
-  { label: "Объекты", to: "/projects" },
-  { label: "О компании", to: "/about" },
-  { label: "Дочерние компании", to: "/subsidiaries" },
-  { label: "Сертификаты", to: "/certificates" },
-  { label: "Новости", to: "/news" },
-  { label: "Контакты", to: "/contacts" },
+  { key: "nav.projects",     to: "/projects" },
+  { key: "nav.about",        to: "/about" },
+  { key: "nav.subsidiaries", to: "/subsidiaries" },
+  { key: "nav.certificates", to: "/certificates" },
+  { key: "nav.news",         to: "/news" },
+  { key: "nav.contacts",     to: "/contacts" },
 ];
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const { path } = useRouter();
+  const { t } = useT();
   const onHome = path === "/";
+
+  // Скрываем navbar полностью внутри /admin
+  if (path.startsWith("/admin")) return null;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 80);
@@ -61,7 +65,7 @@ function Navbar() {
           <nav className="hidden xl:flex items-center gap-9">
             {NAV_LINKS.map((l) => (
               <NavLink
-                key={l.label}
+                key={l.key}
                 to={l.to}
                 className={({ isActive }) =>
                   `whitespace-nowrap text-sm transition-colors ${
@@ -69,13 +73,14 @@ function Navbar() {
                   }`
                 }
               >
-                {l.label}
+                {t(l.key)}
               </NavLink>
             ))}
           </nav>
 
           {/* Right */}
           <div className="flex items-center gap-2 md:gap-4 shrink-0">
+            <LanguageSwitcher />
             <a
               href={BRAND.phoneHref}
               className="hidden 2xl:inline whitespace-nowrap text-sm text-white/70 hover:text-white transition-colors font-mono"
@@ -86,12 +91,12 @@ function Navbar() {
               to="/contacts"
               className="hidden sm:inline-flex whitespace-nowrap items-center gap-2 bg-accent-coral text-white rounded-full px-5 lg:px-6 py-2.5 text-sm font-medium hover:scale-[1.02] transition-transform"
             >
-              Связаться
+              {t("nav.contact_us")}
             </Link>
             <button
               onClick={() => setMenuOpen(true)}
               className="xl:hidden w-10 h-10 rounded-full border border-white/15 bg-white/5 flex items-center justify-center text-white"
-              aria-label="Открыть меню"
+              aria-label={t("nav.open_menu")}
             >
               <Icon name="Menu" size={20} />
             </button>
@@ -119,7 +124,7 @@ function Navbar() {
               <button
                 onClick={() => setMenuOpen(false)}
                 className="w-10 h-10 rounded-full border border-white/15 bg-white/5 flex items-center justify-center"
-                aria-label="Закрыть меню"
+                aria-label={t("nav.close_menu")}
               >
                 <Icon name="X" size={20} />
               </button>
@@ -127,7 +132,7 @@ function Navbar() {
             <nav className="flex-1 flex flex-col gap-2 px-6 pt-10">
               {NAV_LINKS.map((l, i) => (
                 <motion.div
-                  key={l.label}
+                  key={l.key}
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.1 + i * 0.05, duration: 0.5, ease }}
@@ -141,12 +146,13 @@ function Navbar() {
                       }`
                     }
                   >
-                    {l.label}
+                    {t(l.key)}
                   </NavLink>
                 </motion.div>
               ))}
             </nav>
             <div className="p-6 border-t border-white/10 flex flex-col gap-3">
+              <LanguageSwitcher variant="mobile" />
               <a href={BRAND.phoneHref} className="font-mono text-sm text-white/70">
                 {BRAND.phone}
               </a>
@@ -155,7 +161,7 @@ function Navbar() {
                 onClick={() => setMenuOpen(false)}
                 className="bg-accent-coral text-white rounded-full px-6 py-3 text-sm font-medium text-center"
               >
-                Связаться
+                {t("nav.contact_us")}
               </Link>
             </div>
           </motion.div>

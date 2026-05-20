@@ -47,17 +47,10 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
-  /* Hide scrollbar for testimonial carousel */
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-
-  /* Smooth scroll on anchor links */
   html { scroll-behavior: smooth; }
-
-  /* Subtle paper grain on light sections — adds premium tactility */
-  .grain-light {
-    position: relative;
-  }
+  .grain-light { position: relative; }
   .grain-light::before {
     content: "";
     position: absolute;
@@ -71,42 +64,67 @@
     z-index: 0;
   }
   .grain-light > * { position: relative; z-index: 1; }
+
+  /* Admin styling — light theme */
+  .admin-root { background: #F5F1EA; color: #1A1612; min-height: 100vh; }
+  .admin-root input, .admin-root textarea, .admin-root select {
+    background: white; border: 1px solid #D7D2C9; border-radius: 8px;
+    padding: 10px 12px; width: 100%; color: #1A1612;
+    font-size: 14px; transition: border-color 0.15s;
+  }
+  .admin-root input:focus, .admin-root textarea:focus, .admin-root select:focus {
+    outline: none; border-color: #063CA1; box-shadow: 0 0 0 3px rgba(6,60,161,0.08);
+  }
+  .admin-root label { font-size: 12px; font-weight: 500; color: #5C5550; display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .admin-btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity 0.15s, transform 0.15s; border: none; }
+  .admin-btn:active { transform: scale(0.98); }
+  .admin-btn-primary { background: #063CA1; color: white; }
+  .admin-btn-primary:hover { opacity: 0.9; }
+  .admin-btn-danger { background: #DC2626; color: white; }
+  .admin-btn-danger:hover { opacity: 0.9; }
+  .admin-btn-ghost { background: transparent; color: #1A1612; border: 1px solid #D7D2C9; }
+  .admin-btn-ghost:hover { background: #EFEAE2; }
+  .admin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 </style>
 </head>
 <body class="bg-bg-dark text-white">
 <div id="root"></div>
 
-<!-- Suppress benign framer-motion internal dev-mode key warning (not source-code-related) -->
+<!-- Suppress benign framer-motion internal dev-mode key warning -->
 <script>
   (function(){
     const orig = console.error.bind(console);
     console.error = function(...a){
       const s = typeof a[0] === 'string' ? a[0] : '';
-      if (s.includes('unique "key"') && (a.join('|').includes('framer-motion'))) {
-        return; // drop
-      }
+      if (s.includes('unique "key"') && (a.join('|').includes('framer-motion'))) return;
       orig(...a);
     };
   })();
 </script>
 
 <!-- React 18 -->
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 
-<!-- Framer Motion 11 (UMD exposes `FramerMotion`) -->
+<!-- Framer Motion 11 -->
 <script src="https://unpkg.com/framer-motion@11.11.17/dist/framer-motion.js"></script>
 
-<!-- Lucide vanilla (lucide-react UMD ships empty, so we wrap vanilla data) -->
+<!-- Lucide vanilla -->
 <script src="https://unpkg.com/lucide@0.453.0/dist/umd/lucide.js"></script>
 
-<!-- Helpers + components -->
+<!-- Supabase JS -->
+<script src="https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+
+<!-- Core: config, helpers, supabase client, i18n -->
+<script type="text/babel" data-presets="react" src="src/config.jsx"></script>
 <script type="text/babel" data-presets="react" src="src/lib.jsx"></script>
 <script type="text/babel" data-presets="react" src="src/brand.jsx"></script>
 <script type="text/babel" data-presets="react" src="src/router.jsx"></script>
+<script type="text/babel" data-presets="react" src="src/i18n.jsx"></script>
+<script type="text/babel" data-presets="react" src="src/supabase.jsx"></script>
 
-<!-- Data -->
+<!-- Data (now loads from Supabase with seed fallback) -->
 <script type="text/babel" data-presets="react" src="src/data/projects.jsx"></script>
 <script type="text/babel" data-presets="react" src="src/data/government.jsx"></script>
 <script type="text/babel" data-presets="react" src="src/data/news.jsx"></script>
@@ -140,6 +158,17 @@
 <script type="text/babel" data-presets="react" src="src/pages/NewsPages.jsx"></script>
 <script type="text/babel" data-presets="react" src="src/pages/AboutContactsPages.jsx"></script>
 
+<!-- Admin panel -->
+<script type="text/babel" data-presets="react" src="src/admin/utils.jsx"></script>
+<script type="text/babel" data-presets="react" src="src/admin/Login.jsx"></script>
+<script type="text/babel" data-presets="react" src="src/admin/Layout.jsx"></script>
+<script type="text/babel" data-presets="react" src="src/admin/Dashboard.jsx"></script>
+<script type="text/babel" data-presets="react" src="src/admin/NewsAdmin.jsx"></script>
+<script type="text/babel" data-presets="react" src="src/admin/ProjectsAdmin.jsx"></script>
+<script type="text/babel" data-presets="react" src="src/admin/GovCasesAdmin.jsx"></script>
+<script type="text/babel" data-presets="react" src="src/admin/AdminApp.jsx"></script>
+
+<!-- App bootstrap -->
 <script type="text/babel" data-presets="react" src="src/App.jsx"></script>
 </body>
 </html>
