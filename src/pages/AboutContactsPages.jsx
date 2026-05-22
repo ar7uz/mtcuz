@@ -508,12 +508,13 @@ function ContactsPage() {
 
       {/* Quick contacts */}
       <section className="bg-bg-light py-20 lg:py-24 grain-light">
-        <div className="max-w-7xl mx-auto px-6 lg:px-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+        <div className="max-w-7xl mx-auto px-6 lg:px-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-6">
           {[
             { icon: "MapPin", label: "Офис", value: BRAND.address },
             { icon: "Phone", label: "Телефон", value: BRAND.phone, href: BRAND.phoneHref },
             { icon: "Mail", label: "Email", value: BRAND.email, href: `mailto:${BRAND.email}` },
-            { icon: "Send", label: "Telegram / Instagram", value: BRAND.social.handle, href: BRAND.social.telegram },
+            { icon: "Send", label: "Telegram", value: BRAND.social.handle, href: BRAND.social.telegram, external: true },
+            { icon: "Instagram", label: "Instagram", value: BRAND.social.handle, href: BRAND.social.instagram, external: true },
           ].map((c) => (
             <motion.div
               key={c.label}
@@ -528,7 +529,11 @@ function ContactsPage() {
                   {c.label}
                 </div>
                 {c.href ? (
-                  <a href={c.href} className="font-serif text-lg text-text-light-primary hover:text-accent-coral transition-colors leading-snug whitespace-pre-line">
+                  <a
+                    href={c.href}
+                    {...(c.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    className="font-serif text-lg text-text-light-primary hover:text-accent-coral transition-colors leading-snug whitespace-pre-line break-words"
+                  >
                     {c.value}
                   </a>
                 ) : (
